@@ -1,0 +1,101 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mx-auto px-4 py-10">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+    <!-- Carousel -->
+    <div>
+      {% if product.images.all %}
+      <div class="relative w-full overflow-hidden rounded shadow">
+        <div
+          id="carousel-images"
+          class="flex transition-transform duration-500"
+        >
+          {% for image in product.images.all %}
+          <img
+            src="{{ image.image.url }}"
+            alt="{{ product.name }}"
+            class="w-full flex-shrink-0 object-cover"
+          />
+          {% endfor %}
+        </div>
+
+        <!-- Navigation Buttons -->
+        <button
+          onclick="prevSlide()"
+          class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 px-2 py-1 rounded-l"
+        >
+          &#10094;
+        </button>
+        <button
+          onclick="nextSlide()"
+          class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 px-2 py-1 rounded-r"
+        >
+          &#10095;
+        </button>
+      </div>
+      {% else %}
+      <div
+        class="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500 text-xl rounded"
+      >
+        No image available
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-span-2">
+      <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ product.name }}</h1>
+      <p class="text-lg text-gray-700 mb-6">{{ product.desc }}</p>
+      <p class="text-2xl font-bold text-blue-600 mb-6">${{ product.price }}</p>
+      <p class="text-xl mb-5">Stock: {{ product.qty }} pcs</p>
+
+      <form method="post" action="{% url 'add_to_cart' product.id %}">
+        {% csrf_token %}
+        <div class="flex items-center gap-4">
+          <label for="quantity" class="text-sm font-medium text-gray-700"
+            >Quantity:</label
+          >
+          <input
+            type="number"
+            name="quantity"
+            id="quantity"
+            value="1"
+            min="1"
+            class="w-20 px-3 py-2 border rounded"
+          />
+
+          <button
+            type="submit"
+            class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Add to Cart
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Simple Carousel Script -->
+<script>
+  let currentSlide = 0;
+  const imagesContainer = document.getElementById("carousel-images");
+  const totalSlides = imagesContainer.children.length;
+
+  function updateSlide() {
+    const width = imagesContainer.clientWidth;
+    imagesContainer.style.transform = `translateX(-${currentSlide * width}px)`;
+  }
+
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    updateSlide();
+  }
+
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    updateSlide();
+  }
+
+  window.addEventListener("resize", updateSlide);
+</script>
+{% endblock %}

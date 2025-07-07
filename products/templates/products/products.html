@@ -6,7 +6,7 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
     {% for product in products %}
-    <div class="border p-4 rounded shadow hover:shadow-lg transition cursor-pointer">
+    <a href="/products/{{product.id}}" class="border p-4 rounded shadow hover:shadow-lg transition cursor-pointer">
         {% if product.images.all %}
           <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover mt-2 rounded">
         {% else %}
@@ -16,7 +16,7 @@
       <p class="text-gray-700">{{ product.description|truncatewords:20 }}</p>
       <p class="font-bold mt-2 text-blue-600">${{ product.price }}</p>
 
-    </div>
+    </a>
     {% endfor %}
   </div>
 </div>

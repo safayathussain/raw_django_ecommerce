@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'theme',
     'widget_tweaks',
     'auths',
-    'products'
+    'products',
+    'carts'
 ]
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [

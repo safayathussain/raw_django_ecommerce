@@ -21,8 +21,9 @@ from django.conf.urls.static import static
 from products import views as products_views
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', products_views.get_all_products, name='home'),
     path('auth/', include('auths.urls')),
     path('products/', include('products.urls')),
-    path('', products_views.get_all_products, name='home')
+    path('carts/', include('carts.urls')),
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
