@@ -4,8 +4,8 @@ from .forms import UserRegistrationForm, LoginForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .models import CustomUser, CustomUserManager
+from carts.models import Cart
 # Create your views here.
-
 def register_user(request):
     if(request.method == "POST"):
         form = UserRegistrationForm(request.POST) 
@@ -17,6 +17,7 @@ def register_user(request):
                 password=password
             )
             login(request, user)
+            Cart.objects.create(user=user)
             redirect("home")
     else:
         form = UserRegistrationForm()

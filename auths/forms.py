@@ -2,12 +2,12 @@ from django import forms
 from .models import CustomUser
 
 class LoginForm(forms.Form):
-    email = forms.CharField()
+    email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
 
 
 class UserRegistrationForm(forms.Form):
-    email = forms.CharField()
+    email = forms.EmailField()
     password1 = forms.CharField(widget=forms.PasswordInput)
     password2 = forms.CharField(widget=forms.PasswordInput)
     def clean(self):

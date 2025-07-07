@@ -48,7 +48,7 @@
       <p class="text-2xl font-bold text-blue-600 mb-6">${{ product.price }}</p>
       <p class="text-xl mb-5">Stock: {{ product.qty }} pcs</p>
 
-      <form method="post" action="{% url 'add_to_cart' product.id %}">
+      <form method="post" action="{% url 'add_to_cart' product.pk%}">
         {% csrf_token %}
         <div class="flex items-center gap-4">
           <label for="quantity" class="text-sm font-medium text-gray-700"
@@ -56,7 +56,7 @@
           >
           <input
             type="number"
-            name="quantity"
+            name="qty"
             id="quantity"
             value="1"
             min="1"
