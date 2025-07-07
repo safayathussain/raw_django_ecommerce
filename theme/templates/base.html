@@ -1,0 +1,44 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Django Tailwind</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    {% tailwind_css %}
+  </head>
+
+  <body class="bg-gray-50 font-serif leading-normal tracking-normal">
+    <nav class="bg-blue-600 text-white p-4">
+      <div class="container mx-auto flex items-center justify-between">
+        <!-- Logo / Brand -->
+        <a href="/" class="text-xl font-bold hover:text-gray-200">MyShop</a>
+
+        <!-- Links -->
+        <div class="flex gap-5">
+          <a class="hover:text-gray-300">Products</a>
+
+          <a class="hover:text-gray-300">Cart</a>
+
+          {% if request.user.is_authenticated %}
+          <span class="text-sm">Welcome, {{ request.user.username }}!</span>
+          <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="hover:text-gray-300">Logout</button>
+          </form>
+          {% else %}
+          <a href="{% url 'login' %}" class="hover:text-gray-300">Login</a>
+          <a href="{% url 'register' %}" class="hover:text-gray-300"
+            >Register</a
+          >
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    <!-- Main content block -->
+    <main class="container mx-auto mt-6">
+      {% block content %} {% endblock %}
+    </main>
+  </body>
+</html>
