@@ -3,16 +3,17 @@ from django.contrib import messages
 from .forms import UserRegistrationForm, LoginForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from .models import CustomUser, CustomUserManager
 # Create your views here.
 
 def register_user(request):
     if(request.method == "POST"):
         form = UserRegistrationForm(request.POST) 
         if(form.is_valid()):
-            username = form.cleaned_data['username'] 
+            email = form.cleaned_data['email'] 
             password = form.cleaned_data['password1']
-            user = User.objects.create_user(
-                username=username,
+            user = CustomUser.objects.create_user(
+                email=email,
                 password=password
             )
             login(request, user)
@@ -24,14 +25,14 @@ def login_user(request):
     if(request.method == "POST"):
         form = LoginForm(request.POST)
         if(form.is_valid()):
-            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
+            user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
                 return redirect('register')  # Replace with your desired redirect
             else:
-                messages.error(request, 'Invalid username or password')
+                messages.error(request, 'Invalid email or password')
 
     else:
         form = LoginForm()
