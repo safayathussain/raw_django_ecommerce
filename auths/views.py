@@ -17,6 +17,7 @@ def register_user(request):
                 password=password
             )
             login(request, user)
+            redirect("home")
     else:
         form = UserRegistrationForm()
     return render(request, "auth/register.html", {'form': form})
@@ -30,7 +31,7 @@ def login_user(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('register')  # Replace with your desired redirect
+                return redirect('home')  
             else:
                 messages.error(request, 'Invalid email or password')
 

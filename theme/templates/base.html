@@ -23,8 +23,7 @@
 
           <a class="hover:text-gray-300">Cart</a>
 
-          {% if request.user.is_authenticated %}
-          <span class="text-sm">Welcome, {{ request.user.username }}!</span>
+          {% if request.user.is_authenticated %} 
           <form method="POST" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="hover:text-gray-300">Logout</button>
