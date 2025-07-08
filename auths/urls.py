@@ -1,5 +1,5 @@
 from django.urls import path, reverse_lazy
-from .views import  register_user, logout_user, login_user
+from .views import  register_user,   login_user
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [

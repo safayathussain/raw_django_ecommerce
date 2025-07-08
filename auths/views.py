@@ -7,7 +7,10 @@ from .models import CustomUser, CustomUserManager
 from carts.models import Cart
 # Create your views here.
 def register_user(request):
+    if request.user.is_authenticated:
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
     if(request.method == "POST"):
+        
         form = UserRegistrationForm(request.POST) 
         if(form.is_valid()):
             email = form.cleaned_data['email'] 
@@ -18,13 +21,15 @@ def register_user(request):
             )
             login(request, user)
             Cart.objects.create(user=user)
-            redirect("home")
+            return redirect("home")
     else:
         form = UserRegistrationForm()
     return render(request, "auth/register.html", {'form': form})
 
 def login_user(request):
-    if(request.method == "POST"):
+    if request.user.is_authenticated:
+        return redirect(request.META.get('HTTP_REFERER', '/')) 
+    if(request.method == "POST"): 
         form = LoginForm(request.POST)
         if(form.is_valid()):
             email = form.cleaned_data['email']
@@ -39,7 +44,4 @@ def login_user(request):
     else:
         form = LoginForm()
     return render(request, "auth/login.html", {'form': form}) 
-
-def logout_user(request):
-
-    return
+ 
