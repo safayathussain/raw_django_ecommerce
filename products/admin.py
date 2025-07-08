@@ -1,9 +1,9 @@
 from django.contrib import admin
 from .models import Product, ProductImage
 
-class ProductImageInline(admin.TabularInline):  # or StackedInline
+class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1  # how many empty image slots to show
+    extra = 1 
 
 class ProductAdmin(admin.ModelAdmin):
     inlines = [ProductImageInline]
