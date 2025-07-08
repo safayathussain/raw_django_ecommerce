@@ -10,7 +10,6 @@ def register_user(request):
     if request.user.is_authenticated:
         return redirect(request.META.get('HTTP_REFERER', '/')) 
     if(request.method == "POST"):
-        
         form = UserRegistrationForm(request.POST) 
         if(form.is_valid()):
             email = form.cleaned_data['email'] 
