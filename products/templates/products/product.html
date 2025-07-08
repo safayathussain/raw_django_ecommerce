@@ -1,89 +1,77 @@
-{% extends "base.html" %} {% block content %}
-<div class="container mx-auto px-4 py-10">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
     <!-- Carousel -->
-    <div>
+    <div class="lg:col-span-1">
       {% if product.images.all %}
-      <div class="relative w-full overflow-hidden rounded shadow">
-        <div
-          id="carousel-images"
-          class="flex transition-transform duration-500"
-        >
+      <div class="relative w-full overflow-hidden rounded-lg shadow-md">
+        <div id="carousel-images" class="flex transition-transform duration-500 ease-in-out">
           {% for image in product.images.all %}
-          <img
-            src="{{ image.image.url }}"
-            alt="{{ product.name }}"
-            class="w-full flex-shrink-0 object-cover"
-          />
+          <img src="{{ image.image.url }}" alt="{{ product.name }}" class="w-full h-80 object-cover flex-shrink-0">
           {% endfor %}
         </div>
-
         <!-- Navigation Buttons -->
-        <button
-          onclick="prevSlide()"
-          class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 px-2 py-1 rounded-l"
-        >
-          &#10094;
+        <button onclick="prevSlide()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition" aria-label="Previous image">
+          <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
         </button>
-        <button
-          onclick="nextSlide()"
-          class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 px-2 py-1 rounded-r"
-        >
-          &#10095;
+        <button onclick="nextSlide()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 p-2 rounded-full hover:bg-opacity-100 transition" aria-label="Next image">
+          <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
         </button>
+        <!-- Indicators -->
+        {% if product.images.all|length > 1 %}
+        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-2">
+          {% for image in product.images.all %}
+          <button onclick="goToSlide({{ forloop.counter0 }})" class="w-2 h-2 rounded-full bg-gray-400 hover:bg-gray-600 transition" data-slide="{{ forloop.counter0 }}"></button>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
       {% else %}
-      <div
-        class="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500 text-xl rounded"
-      >
+      <div class="w-full h-80 bg-gray-100 flex items-center justify-center text-gray-500 rounded-lg">
         No image available
       </div>
       {% endif %}
     </div>
 
     <!-- Product Info -->
-    <div class="col-span-2">
-      <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ product.name }}</h1>
-      <p class="text-lg text-gray-700 mb-6">{{ product.desc }}</p>
-      <p class="text-2xl font-bold text-blue-600 mb-6">${{ product.price }}</p>
-      <p class="text-xl mb-5">Stock: {{ product.qty }} pcs</p>
+    <div class="lg:col-span-2">
+      <h1 class="text-3xl font-bold text-gray-800 mb-3">{{ product.name }}</h1>
+      <p class="text-base text-gray-600 mb-5">{{ product.desc }}</p>
+      <p class="text-2xl font-semibold text-blue-600 mb-4">${{ product.price }}</p>
+      <p class="text-lg text-gray-700 mb-6">In Stock: {{ product.qty }} pcs</p>
 
-      <form method="post" action="{% url 'add_to_cart' product.pk%}">
+      <form method="post" action="{% url 'add_to_cart' product.pk %}" class="flex items-center gap-4">
         {% csrf_token %}
-        <div class="flex items-center gap-4">
-          <label for="quantity" class="text-sm font-medium text-gray-700"
-            >Quantity:</label
-          >
-          <input
-            type="number"
-            name="qty"
-            id="quantity"
-            value="1"
-            min="1"
-            class="w-20 px-3 py-2 border rounded"
-          />
-
-          <button
-            type="submit"
-            class="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition"
-          >
-            Add to Cart
-          </button>
-        </div>
+        <label for="quantity" class="text-sm font-medium text-gray-700">Quantity:</label>
+        <input type="number" name="qty" id="quantity" value="1" min="1" max="{{ product.qty }}" class="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+          Add to Cart
+        </button>
       </form>
     </div>
   </div>
 </div>
 
-<!-- Simple Carousel Script -->
+<!-- Carousel Script -->
 <script>
   let currentSlide = 0;
   const imagesContainer = document.getElementById("carousel-images");
   const totalSlides = imagesContainer.children.length;
+  const indicators = document.querySelectorAll("[data-slide]");
 
   function updateSlide() {
     const width = imagesContainer.clientWidth;
     imagesContainer.style.transform = `translateX(-${currentSlide * width}px)`;
+    indicators.forEach((indicator, index) => {
+      indicator.classList.toggle("bg-gray-600", index === currentSlide);
+      indicator.classList.toggle("bg-gray-400", index !== currentSlide);
+    });
   }
 
   function prevSlide() {
@@ -96,6 +84,12 @@
     updateSlide();
   }
 
+  function goToSlide(index) {
+    currentSlide = index;
+    updateSlide();
+  }
+
   window.addEventListener("resize", updateSlide);
+  updateSlide(); // Initialize carousel
 </script>
 {% endblock %}

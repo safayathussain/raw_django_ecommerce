@@ -16,17 +16,17 @@ def add_to_cart(request, productId):
     if request.method != 'POST':
         messages.error(request, 'Invalid request method.')
         return redirect('/')
-    qty = int(request.POST.get('qty', 1))
+    qty = int(request.POST.get('qty'))
+    print(qty)
     cart = _get_cart(request.user)
     product = _get_product(productId)
     if product.qty < qty:
         messages.error(request, 'Sorry, not enough stock available.')
         return redirect(request.META.get('HTTP_REFERER', '/'))
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-    cart_item.qty += qty
-    cart_item.save()
-    product.qty -= qty
-    product.save()
+    if not created:
+        cart_item.qty += qty
+        cart_item.save() 
     messages.success(request, 'Product added to cart.')
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
@@ -46,10 +46,7 @@ def remove_from_cart(request, productId):
     if request.method == 'POST':
         cart = _get_cart(request.user)
         product = _get_product(productId)
-        cart_item = get_object_or_404(CartItem, cart=cart, product=product)
-        # Return stock
-        product.qty += cart_item.qty
-        product.save()
+        cart_item = get_object_or_404(CartItem, cart=cart, product=product) 
         cart_item.delete()
         messages.success(request, 'Item removed from cart.')
 
@@ -62,9 +59,7 @@ def increase_qty(request, product_id):
         product = cart_item.product
         if product.qty >= 1:
             cart_item.qty += 1
-            cart_item.save()
-            product.qty -= 1
-            product.save()
+            cart_item.save() 
         else:
             messages.error(request, 'No more stock available.')
     return redirect('cart')
@@ -73,14 +68,12 @@ def increase_qty(request, product_id):
 def decrease_qty(request, product_id):
     if request.method == 'POST':
         cart_item = get_object_or_404(CartItem, product__id=product_id, cart__user=request.user)
-        product = cart_item.product
         cart_item.qty -= 1
-        product.qty += 1
         if cart_item.qty <= 0:
             cart_item.delete()
         else:
             cart_item.save()
-        product.save()
+         
 
     return redirect('cart')
 
@@ -96,6 +89,9 @@ def order(request):
         for item in cart_items:
             OrderItems.objects.create(order=order, product=item.product, qty=item.qty)
             item.delete()
+            product = get_object_or_404(Product, pk=item.product.pk)
+            product.qty -= item.qty
+            product.save()
         messages.success(request, 'Order created successfully')
         return redirect(request.META.get('HTTP_REFERER', '/'))
        
